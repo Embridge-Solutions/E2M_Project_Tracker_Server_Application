@@ -1,0 +1,52 @@
+{
+  "name": "login-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "dev-setup": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+    "prod-setup": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed --seed 20221003124532-admin-user && npx sequelize-cli db:seed --seed 20221005065125-role"
+  },
+  "author": "Embridge SOLUTIONS",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.4",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "cron": "^2.1.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "morgan": "^1.10.0",
+    "mssql": "^9.0.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "sequelize": "^6.23.2"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.5.1"
+  },
+  "bin": {
+    "www": "./server.js"
+  },
+  "pkg": {
+    "scripts": [
+      "config/**/*.js",
+      "controllers/**/*.js",
+      "data/**/*.js",
+      "middleware/**/*.js",
+      "migrations/**/*.js",
+      "models/**/*.js",
+      "routes/**/*.js",
+      "seeders/**/*.js"
+    ],
+    "assets": "uploads/**/*",
+    "outputPath": "dist"
+  }
+}
