@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       isAdmin: DataTypes.STRING,
       role: DataTypes.STRING,
+      roleId: DataTypes.INTEGER,
       subdepartmentId: DataTypes.STRING,
       isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
