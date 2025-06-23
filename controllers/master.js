@@ -151,12 +151,8 @@ const getTask = async (req, res) => {
   }
 };
 const addTask = async (req, res) => {
-  const { Task, StartTime, comp_id, plant_id, CreatedBy } = req.body;
+  const { Task, comp_id, plant_id, CreatedBy } = req.body;
   console.log('req.body', req.body);
-
-  // Parse StartTime and format it correctly for SQL Server
-  const date = new Date(StartTime); // Parse the input ISO date string
-  const formattedStartTime = date.toISOString().slice(0, 19).replace('T', ' '); // Format as YYYY-MM-DD HH:MM:SS
 
   try {
     const query = `
@@ -164,7 +160,6 @@ const addTask = async (req, res) => {
         '${Task}', 
         ${comp_id}, 
         ${plant_id}, 
-        '${formattedStartTime}', 
         '${CreatedBy}'
     `;
 
@@ -180,35 +175,56 @@ const addTask = async (req, res) => {
 };
 
 const updateTask = async (req, res) => {
-  const { TaskId, Task, comp_id, plant_id, EndTime } = req.body;
+  const { TaskId, Task, comp_id, plant_id, EndTime, StartTime } = req.body;
 
   console.log('req.body', req.body);
 
-  // Convert EndTime into a proper format if it's provided
-  let endTimeValue = null;
-  if (EndTime && EndTime !== 'null' && EndTime !== 'NULL' && EndTime !== '') {
-    const date = new Date(EndTime); // Parse the input ISO date string
-    endTimeValue = `'${date.toISOString().slice(0, 19).replace('T', ' ')}'`; // Format as YYYY-MM-DD HH:MM:SS
-  } else {
-    endTimeValue = 'NULL'; // Handle cases where EndTime is null or empty
+  // Validate mandatory fields
+  if (!TaskId || !Task || !comp_id || !plant_id) {
+    return res.status(400).json({ msg: 'Missing required fields' });
   }
+
+  // ✅ Format date to IST (YYYY-MM-DD HH:MM:SS)
+  const formatISTDateForSQL = (value) => {
+    if (!value || value === 'null' || value === 'NULL' || value === '') {
+      return 'NULL';
+    }
+
+    const date = new Date(value);
+    if (!isNaN(date.getTime())) {
+      // Convert to IST (+5:30)
+      const istOffsetMs = 5.5 * 60 * 60 * 1000;
+      const istDate = new Date(date.getTime() + istOffsetMs);
+
+      // Format as 'YYYY-MM-DD HH:MM:SS'
+      const formatted = istDate.toISOString().slice(0, 19).replace('T', ' ');
+      return `'${formatted}'`;
+    }
+
+    return 'NULL'; // fallback
+  };
+
+  const endTimeValue = formatISTDateForSQL(EndTime);
+  const startTimeValue = formatISTDateForSQL(StartTime);
 
   try {
     const data = await db.sequelize.query(
       `EXEC PRC_E2M_Update_Task 
          ${Number(TaskId)}, 
-        '${Task}', 
+         '${Task}', 
          ${Number(comp_id)}, 
          ${Number(plant_id)},
-         ${endTimeValue}`
+         ${endTimeValue},
+         ${startTimeValue}`
     );
 
     console.log('Returned data:', data);
     const updatedTask = data[0]?.[0];
 
-    res
-      .status(200)
-      .json({ msg: 'Task updated successfully', data: updatedTask });
+    res.status(200).json({
+      msg: 'Task updated successfully',
+      data: updatedTask,
+    });
   } catch (error) {
     console.error('Error updating task:', error);
     res.status(500).json({
@@ -234,6 +250,44 @@ const deleteTask = async (req, res) => {
     res.status(500).json({ msg: 'Server Error' });
   }
 };
+const addStartTime = async (req, res) => {
+  const { TaskID, StartTime } = req.body;
+
+  // Debug log to verify input
+  console.log('Received TaskID:', TaskID);
+  console.log('Received StartTime:', StartTime);
+
+  if (!TaskID || !StartTime) {
+    return res.status(400).json({ msg: 'TaskID and StartTime are required' });
+  }
+
+  try {
+    const date = new Date(StartTime);
+    const pad = (n) => n.toString().padStart(2, '0');
+    const localDateTimeString = `${date.getFullYear()}-${pad(
+      date.getMonth() + 1
+    )}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(
+      date.getMinutes()
+    )}:${pad(date.getSeconds())}`;
+
+    const query = `
+      EXEC PRC_E2M_Insert_Task_StartTime 
+        ${TaskID}, 
+        '${localDateTimeString}'
+    `;
+
+    console.log('Executing query:', query);
+
+    const data = await db.sequelize.query(query);
+    res
+      .status(200)
+      .json({ msg: 'StartTime updated successfully', data: data[0] });
+  } catch (error) {
+    console.error('Error updating StartTime:', error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
 module.exports = {
   getPlant,
   addPlant,
@@ -247,4 +301,5 @@ module.exports = {
   addTask,
   updateTask,
   deleteTask,
+  addStartTime,
 };
