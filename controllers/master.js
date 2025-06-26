@@ -17,10 +17,10 @@ const addPlant = async (req, res) => {
 
   try {
     const data = await db.sequelize.query(
-      `EXEC PRC_E2M_Insert_Plant '${PlantName}', '${PlantDescription}'`
+      `PRC_E2M_Insert_Plant '${PlantName}', '${PlantDescription}'`
     );
 
-    res.status(200).json({ msg: 'Plant inserted successfully', data: data[0] });
+    res.status(200).json({ msg: 'Plant inserted successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Server Error' });
@@ -28,9 +28,6 @@ const addPlant = async (req, res) => {
 };
 const updatePlant = async (req, res) => {
   const { PlantId, PlantName, PlantDescription } = req.body;
-
-  console.log('req.body', req.body);
-
   try {
     const data = await db.sequelize.query(
       `EXEC PRC_E2M_Update_Plant
@@ -38,13 +35,7 @@ const updatePlant = async (req, res) => {
         '${PlantName}', 
         '${PlantDescription}'`
     );
-
-    console.log('Returned data:', data);
-    const updatedPlant = data[0]?.[0];
-
-    res
-      .status(200)
-      .json({ msg: 'Plant updated successfully', data: updatedPlant });
+    res.status(200).json({ msg: 'Plant updated successfully' });
   } catch (error) {
     console.error('Error updating plant:', error);
     res.status(500).json({ msg: 'Server Error' });
@@ -53,15 +44,12 @@ const updatePlant = async (req, res) => {
 
 const deletePlant = async (req, res) => {
   const { PlantId } = req.params;
-  console.log('req.params', req.params);
-
   try {
     const data = await db.sequelize.query(`EXEC PRC_Delete_Plant ${Number(
       PlantId
     )}
 `);
-
-    res.status(200).json({ msg: 'Plant deleted successfully', data: data[0] });
+    res.status(200).json({ msg: 'Plant deleted successfully' });
   } catch (error) {
     console.error('Error deleting plant:', error);
     res.status(500).json({ msg: 'Server Error' });
@@ -81,16 +69,12 @@ const getCompany = async (req, res) => {
 };
 
 const addCompany = async (req, res) => {
-  const { CompanyName, CompanyDescription } = req.body;
-
+  const { CompanyName, CompanyDescription, plantId } = req.body;
   try {
     const data = await db.sequelize.query(
-      `EXEC PRC_E2M_Insert_Company '${CompanyName}', '${CompanyDescription}'`
+      `PRC_E2M_Insert_Company '${CompanyName}', '${CompanyDescription}','${plantId}'`
     );
-
-    res
-      .status(200)
-      .json({ msg: 'Company inserted successfully', data: data[0] });
+    res.status(200).json({ msg: 'Company inserted successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Server Error' });
@@ -98,24 +82,14 @@ const addCompany = async (req, res) => {
 };
 
 const updateCompany = async (req, res) => {
-  const { CompanyId, CompanyName, CompanyDescription } = req.body;
-
-  console.log('req.body', req.body);
-
+  const { CompanyId, CompanyName, CompanyDescription, plantId } = req.body;
   try {
-    const data = await db.sequelize.query(
-      `EXEC PRC_E2M_Update_Company
-        ${Number(CompanyId)}, 
-        '${CompanyName}', 
-        '${CompanyDescription}'`
+    await db.sequelize.query(
+      `PRC_E2M_Update_Company ${Number(
+        CompanyId
+      )},'${CompanyName}', '${CompanyDescription}','${plantId}'`
     );
-
-    console.log('Returned data:', data);
-    const updatedCompany = data[0]?.[0];
-
-    res
-      .status(200)
-      .json({ msg: 'Company updated successfully', data: updatedCompany });
+    res.status(200).json({ msg: 'Company updated successfully' });
   } catch (error) {
     console.error('Error updating company:', error);
     res.status(500).json({ msg: 'Server Error' });
@@ -124,16 +98,11 @@ const updateCompany = async (req, res) => {
 
 const deleteCompany = async (req, res) => {
   const { CompanyId } = req.params;
-  console.log('req.params', req.params);
-
   try {
     const data = await db.sequelize.query(
       `EXEC PRC_Delete_Company ${Number(CompanyId)}`
     );
-
-    res
-      .status(200)
-      .json({ msg: 'Company deleted successfully', data: data[0] });
+    res.status(200).json({ msg: 'Company deleted successfully' });
   } catch (error) {
     console.error('Error deleting company:', error);
     res.status(500).json({ msg: 'Server Error' });
