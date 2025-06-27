@@ -20,6 +20,11 @@ router.post('/addCompany', Controller.addCompany);
 router.put('/updateCompany', Controller.updateCompany);
 router.delete('/deleteCompany/:CompanyId', Controller.deleteCompany);
 
+router.get('/getProject', Controller.getProjects);
+router.post('/addProject', Controller.addProjectNew);
+router.put('/updateProject', Controller.updateProject);
+router.put('/deleteProd/:Id', Controller.deleteProject);
+
 router.get('/getTask', Controller.getTask);
 router.post('/addTask', Controller.addTask);
 router.put('/updateTask', Controller.updateTask);

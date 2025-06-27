@@ -100,7 +100,7 @@ const deleteCompany = async (req, res) => {
   const { CompanyId } = req.params;
   try {
     const data = await db.sequelize.query(
-      `EXEC PRC_Delete_Company ${Number(CompanyId)}`
+      `PRC_Delete_Company ${Number(CompanyId)}`
     );
     res.status(200).json({ msg: 'Company deleted successfully' });
   } catch (error) {
@@ -108,6 +108,60 @@ const deleteCompany = async (req, res) => {
     res.status(500).json({ msg: 'Server Error' });
   }
 };
+
+const getProjects = async (req, res) => {
+  try {
+    const projectData = await db.sequelize.query(`PRC_E2M_Get_Projects`);
+    res
+      .status(200)
+      .json({ msg: 'Data fetched successfully', data: projectData[0] });
+  } catch (error) {
+    console.error('Error deleting company:', error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const addProjectNew = async (req, res) => {
+  const { projectName, projectDesc, companyId, plantId } = req.body;
+  try {
+    await db.sequelize.query(
+      `PRC_E2M_Insert_Projects '${projectName}','${projectDesc}',${Number(
+        companyId
+      )},${Number(plantId)}`
+    );
+    res.status(200).json({ msg: 'Project Added successfully' });
+  } catch (error) {
+    console.error('Error updating company:', error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const updateProject = async (req, res) => {
+  const { Id, projectName, projectDesc } = req.body;
+  try {
+    const update = await db.sequelize.query(
+      `PRC_E2M_Update_Projects ${Number(Id)},'${projectName}','${projectDesc}'`
+    );
+    res.status(200).json({ msg: 'Project Updated Successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const deleteProject = async (req, res) => {
+  const { Id } = req.params;
+  try {
+    const deleteProject = await db.sequelize.query(
+      `PRC_E2M_Delete_Projects ${Number(Id)}`
+    );
+    res.status(200).json({ msg: 'Project Delete Successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
 const getTask = async (req, res) => {
   try {
     const data = await db.sequelize.query('PRC_E2M_Get_Task');
@@ -119,21 +173,18 @@ const getTask = async (req, res) => {
     res.status(500).json({ msg: 'Server Error' });
   }
 };
+
 const addTask = async (req, res) => {
   const { Task, comp_id, plant_id, CreatedBy } = req.body;
-  console.log('req.body', req.body);
 
   try {
     const query = `
-      EXEC PRC_E2M_Insert_Task 
+      PRC_E2M_Insert_Task 
         '${Task}', 
         ${comp_id}, 
         ${plant_id}, 
         '${CreatedBy}'
     `;
-
-    console.log('Executing query:', query);
-
     const data = await db.sequelize.query(query);
 
     res.status(200).json({ msg: 'Task inserted successfully', data: data[0] });
@@ -145,8 +196,6 @@ const addTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   const { TaskId, Task, comp_id, plant_id, EndTime, StartTime } = req.body;
-
-  console.log('req.body', req.body);
 
   // Validate mandatory fields
   if (!TaskId || !Task || !comp_id || !plant_id) {
@@ -206,13 +255,10 @@ const updateTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   const { TaskId } = req.params;
-  console.log('req.params', req.params);
-
   try {
     const data = await db.sequelize.query(
       `EXEC PRC_Delete_Task ${Number(TaskId)}`
     );
-
     res.status(200).json({ msg: 'Task deleted successfully', data: data[0] });
   } catch (error) {
     console.error('Error deleting task:', error);
@@ -221,10 +267,6 @@ const deleteTask = async (req, res) => {
 };
 const addStartTime = async (req, res) => {
   const { TaskID, StartTime } = req.body;
-
-  // Debug log to verify input
-  console.log('Received TaskID:', TaskID);
-  console.log('Received StartTime:', StartTime);
 
   if (!TaskID || !StartTime) {
     return res.status(400).json({ msg: 'TaskID and StartTime are required' });
@@ -266,6 +308,10 @@ module.exports = {
   addCompany,
   updateCompany,
   deleteCompany,
+  getProjects,
+  addProjectNew,
+  updateProject,
+  deleteProject,
   getTask,
   addTask,
   updateTask,
