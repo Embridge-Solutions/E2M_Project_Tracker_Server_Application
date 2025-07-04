@@ -7,5 +7,6 @@ const routes = [
   { path: `${prefix}scope`, file: 'scope' },
   { path: `${prefix}master`, file: 'master' },
   { path: `${prefix}comm`, file: 'comm' },
+  { path: `${prefix}task`, file: 'taskManager' },
 ];
 module.exports = routes;
