@@ -5,8 +5,8 @@ const routes = [
   { path: `${prefix}users`, file: 'user' },
   { path: `${prefix}role`, file: 'role' },
   { path: `${prefix}scope`, file: 'scope' },
-  { path: `${prefix}furnace`, file: 'furnace' },
-  { path: `${prefix}pouring`, file: 'pouring' },
-  { path: `${prefix}downTime`, file: 'downTime' },
+  { path: `${prefix}master`, file: 'master' },
+  { path: `${prefix}comm`, file: 'comm' },
+  { path: `${prefix}task`, file: 'taskManager' },
 ];
 module.exports = routes;

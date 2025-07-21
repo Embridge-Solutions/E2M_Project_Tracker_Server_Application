@@ -33,6 +33,7 @@ const login = async (req, res) => {
       userName: user.username,
       email: user.email,
       role: user.role,
+      roleId: user.roleId,
       dept_access: user.subdepartmentId,
       access: role.access == undefined ? null : btoa(role.access),
     };
