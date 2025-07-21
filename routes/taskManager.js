@@ -12,5 +12,7 @@ const Controller = require(`../controllers/${controllerName}`);
 
 router.get('/getTaskDetails', Controller.getTaskName);
 router.post('/insertTaskName', Controller.addTaskName);
+router.put('/startTaskTimer', Controller.startTimer);
+router.post('/singleTDetails', Controller.singleTaskDetails);
 
 module.exports = router;
