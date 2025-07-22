@@ -29,10 +29,13 @@ const addTaskName = async (req, res) => {
 };
 
 const startTimer = async (req, res) => {
-  const { taskId, startTime } = req.body;
+  const { taskId, startTime, parentTaskId } = req.body;
+  console.log('req.body', req.body);
   try {
     const taskTimer = await db.sequelize.query(
-      `PRC_E2M_Start_Task_Timer ${Number(taskId)},'${startTime}'`
+      `PRC_E2M_Start_Task_Timer ${Number(taskId)},'${startTime}',${Number(
+        parentTaskId
+      )}`
     );
     return res.status(200).json({ msg: 'Timer Start Successfully' });
   } catch (error) {
