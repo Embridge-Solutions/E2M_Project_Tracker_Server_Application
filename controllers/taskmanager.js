@@ -57,4 +57,22 @@ const singleTaskDetails = async (req, res) => {
   }
 };
 
-module.exports = { getTaskName, addTaskName, startTimer, singleTaskDetails };
+const holdTask = async (req, res) => {
+  const { Id, pauseEndTime, holdReason } = req.body;
+  try {
+    const holdData = await db.sequelize.query(
+      `PRC_E2M_Holding_Task ${Number(Id)},'${pauseEndTime}','${holdReason}'`
+    );
+    res.status(200).json({ msg: 'Task Hold Successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+module.exports = {
+  getTaskName,
+  addTaskName,
+  startTimer,
+  singleTaskDetails,
+  holdTask,
+};

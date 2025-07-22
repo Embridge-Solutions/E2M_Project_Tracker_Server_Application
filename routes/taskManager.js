@@ -14,5 +14,5 @@ router.get('/getTaskDetails', Controller.getTaskName);
 router.post('/insertTaskName', Controller.addTaskName);
 router.put('/startTaskTimer', Controller.startTimer);
 router.post('/singleTDetails', Controller.singleTaskDetails);
-
+router.post('/holdTimer', Controller.holdTask);
 module.exports = router;
