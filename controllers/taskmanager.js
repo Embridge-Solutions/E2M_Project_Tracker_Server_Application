@@ -88,6 +88,34 @@ const previousTaskStatus = async (req, res) => {
   }
 };
 
+const endCurrentTask = async (req, res) => {
+  const { Id, endTime, holdReason } = req.body;
+  console.log('req.body', req.body);
+  try {
+    const details = await db.sequelize.query(
+      `PRC_E2M_End_CurrentTask ${Number(Id)},'${endTime}','${holdReason}'`
+    );
+    res.status(200).json({ msg: 'Task Completed Successfully!' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const reStartCurrentTask = async (req, res) => {
+  const { Id, startTime } = req.body;
+  console.log('req.body', req.body);
+  try {
+    const taskRestart = await db.sequelize.query(
+      `PRC_E2M_End_CurrentTask ${Number(Id)},'${startTime}'`
+    );
+    res.status(200).json({ msg: 'Task Restart Successfully!' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
 module.exports = {
   getTaskName,
   addTaskName,
@@ -95,4 +123,6 @@ module.exports = {
   singleTaskDetails,
   holdTask,
   previousTaskStatus,
+  endCurrentTask,
+  reStartCurrentTask,
 };
