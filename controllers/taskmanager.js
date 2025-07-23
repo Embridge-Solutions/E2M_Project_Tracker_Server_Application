@@ -90,7 +90,6 @@ const previousTaskStatus = async (req, res) => {
 
 const endCurrentTask = async (req, res) => {
   const { Id, endTime, holdReason } = req.body;
-  console.log('req.body', req.body);
   try {
     const details = await db.sequelize.query(
       `PRC_E2M_End_CurrentTask ${Number(Id)},'${endTime}','${holdReason}'`
@@ -107,7 +106,7 @@ const reStartCurrentTask = async (req, res) => {
   console.log('req.body', req.body);
   try {
     const taskRestart = await db.sequelize.query(
-      `PRC_E2M_End_CurrentTask ${Number(Id)},'${startTime}'`
+      `PRC_E2M_RESTART_CurrentTask ${Number(Id)},'${startTime}'`
     );
     res.status(200).json({ msg: 'Task Restart Successfully!' });
   } catch (error) {
