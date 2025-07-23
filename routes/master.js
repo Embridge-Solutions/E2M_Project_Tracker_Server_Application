@@ -25,10 +25,4 @@ router.post('/addProject', Controller.addProjectNew);
 router.put('/updateProject', Controller.updateProject);
 router.put('/deleteProd/:Id', Controller.deleteProject);
 
-router.get('/getTask', Controller.getTask);
-router.post('/addTask', Controller.addTask);
-router.put('/updateTask', Controller.updateTask);
-router.delete('/deleteTask/:TaskId', Controller.deleteTask);
-router.post('/addStartTime', Controller.addStartTime);
-
 module.exports = router;

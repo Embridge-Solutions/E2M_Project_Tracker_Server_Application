@@ -73,10 +73,26 @@ const holdTask = async (req, res) => {
   }
 };
 
+const previousTaskStatus = async (req, res) => {
+  const { ParentTaskId } = req.params;
+  try {
+    const details = await db.sequelize.query(
+      `PRC_E2M_Get_Single_Task_Previouse_Details ${Number(ParentTaskId)}`
+    );
+    res
+      .status(200)
+      .json({ msg: 'Previous Data get Successfully!', data: details[0] });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
 module.exports = {
   getTaskName,
   addTaskName,
   startTimer,
   singleTaskDetails,
   holdTask,
+  previousTaskStatus,
 };
