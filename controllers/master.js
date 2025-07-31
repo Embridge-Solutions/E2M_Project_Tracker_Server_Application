@@ -13,11 +13,13 @@ const getPlant = async (req, res) => {
   }
 };
 const addPlant = async (req, res) => {
-  const { PlantName, PlantDescription } = req.body;
+  const { PlantName, PlantDescription, userId } = req.body;
 
   try {
     const data = await db.sequelize.query(
-      `PRC_E2M_Insert_Plant '${PlantName}', '${PlantDescription}'`
+      `PRC_E2M_Insert_Plant '${PlantName}', '${PlantDescription}',${Number(
+        userId
+      )}`
     );
 
     res.status(200).json({ msg: 'Plant inserted successfully' });
@@ -27,13 +29,13 @@ const addPlant = async (req, res) => {
   }
 };
 const updatePlant = async (req, res) => {
-  const { PlantId, PlantName, PlantDescription } = req.body;
+  const { PlantId, PlantName, PlantDescription, userId } = req.body;
   try {
     const data = await db.sequelize.query(
       `EXEC PRC_E2M_Update_Plant
         ${Number(PlantId)}, 
         '${PlantName}', 
-        '${PlantDescription}'`
+        '${PlantDescription}',${Number(userId)}`
     );
     res.status(200).json({ msg: 'Plant updated successfully' });
   } catch (error) {
@@ -69,10 +71,13 @@ const getCompany = async (req, res) => {
 };
 
 const addCompany = async (req, res) => {
-  const { CompanyName, CompanyDescription, plantId } = req.body;
+  const { CompanyName, CompanyDescription, plantId, userId } = req.body;
+
   try {
     const data = await db.sequelize.query(
-      `PRC_E2M_Insert_Company '${CompanyName}', '${CompanyDescription}','${plantId}'`
+      `PRC_E2M_Insert_Company '${CompanyName}', '${CompanyDescription}','${plantId}',
+      ${Number(userId)}
+      `
     );
     res.status(200).json({ msg: 'Company inserted successfully' });
   } catch (error) {
@@ -82,12 +87,16 @@ const addCompany = async (req, res) => {
 };
 
 const updateCompany = async (req, res) => {
-  const { CompanyId, CompanyName, CompanyDescription, plantId } = req.body;
+  const { CompanyId, CompanyName, CompanyDescription, plantId, userId } =
+    req.body;
+
   try {
     await db.sequelize.query(
       `PRC_E2M_Update_Company ${Number(
         CompanyId
-      )},'${CompanyName}', '${CompanyDescription}','${plantId}'`
+      )},'${CompanyName}','${CompanyDescription}','${plantId}',${Number(
+        userId
+      )}`
     );
     res.status(200).json({ msg: 'Company updated successfully' });
   } catch (error) {
@@ -122,12 +131,13 @@ const getProjects = async (req, res) => {
 };
 
 const addProjectNew = async (req, res) => {
-  const { projectName, projectDesc, companyId, plantId } = req.body;
+  const { projectName, projectDesc, companyId, plantId, assignedTo, userId } =
+    req.body;
   try {
     await db.sequelize.query(
       `PRC_E2M_Insert_Projects '${projectName}','${projectDesc}',${Number(
         companyId
-      )},${Number(plantId)}`
+      )},${Number(plantId)},'${assignedTo}',${Number(userId)}`
     );
     res.status(200).json({ msg: 'Project Added successfully' });
   } catch (error) {
@@ -137,10 +147,12 @@ const addProjectNew = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
-  const { Id, projectName, projectDesc } = req.body;
+  const { Id, projectName, projectDesc, assignedTo, userId } = req.body;
   try {
     const update = await db.sequelize.query(
-      `PRC_E2M_Update_Projects ${Number(Id)},'${projectName}','${projectDesc}'`
+      `PRC_E2M_Update_Projects ${Number(
+        Id
+      )},'${projectName}','${projectDesc}','${assignedTo}',${Number(userId)}`
     );
     res.status(200).json({ msg: 'Project Updated Successfully' });
   } catch (error) {

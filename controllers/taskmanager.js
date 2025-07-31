@@ -14,10 +14,12 @@ const getTaskName = async (req, res) => {
 };
 
 const addTaskName = async (req, res) => {
-  const { taskName, projectId } = req.body;
+  const { taskName, projectId, userId } = req.body;
   try {
     const insertTask = await db.sequelize.query(
-      `PRC_E2M_Insert_TaskName '${taskName}',${Number(projectId)}`
+      `PRC_E2M_Insert_TaskName '${taskName}',${Number(projectId)},${Number(
+        userId
+      )} `
     );
     return res
       .status(200)
@@ -30,7 +32,7 @@ const addTaskName = async (req, res) => {
 
 const startTimer = async (req, res) => {
   const { taskId, startTime, parentTaskId } = req.body;
-  console.log('req.body', req.body);
+
   try {
     const taskTimer = await db.sequelize.query(
       `PRC_E2M_Start_Task_Timer ${Number(taskId)},'${startTime}',${Number(
@@ -61,12 +63,28 @@ const singleTaskDetails = async (req, res) => {
 };
 
 const holdTask = async (req, res) => {
-  const { Id, pauseEndTime, holdReason } = req.body;
+  const { Id, pauseEndTime, holdReason, userId } = req.body;
   try {
     const holdData = await db.sequelize.query(
-      `PRC_E2M_Holding_Task ${Number(Id)},'${pauseEndTime}','${holdReason}'`
+      `PRC_E2M_Holding_Task ${Number(
+        Id
+      )},'${pauseEndTime}','${holdReason}',${Number(userId)}`
     );
     res.status(200).json({ msg: 'Task Hold Successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  const { ParentTaskId } = req.params;
+
+  try {
+    const deleteData = await db.sequelize.query(
+      `PRC_E2M_Delete_Task ${Number(ParentTaskId)}`
+    );
+    res.status(200).json({ msg: 'Task Delete Successfully' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: 'Server Error' });
@@ -103,7 +121,7 @@ const endCurrentTask = async (req, res) => {
 
 const reStartCurrentTask = async (req, res) => {
   const { Id, startTime } = req.body;
-  console.log('req.body', req.body);
+
   try {
     const taskRestart = await db.sequelize.query(
       `PRC_E2M_RESTART_CurrentTask ${Number(Id)},'${startTime}'`
@@ -124,4 +142,5 @@ module.exports = {
   previousTaskStatus,
   endCurrentTask,
   reStartCurrentTask,
+  deleteTask,
 };
