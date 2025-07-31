@@ -8,5 +8,6 @@ const routes = [
   { path: `${prefix}master`, file: 'master' },
   { path: `${prefix}comm`, file: 'comm' },
   { path: `${prefix}task`, file: 'taskManager' },
+  { path: `${prefix}report`, file: 'taskReports' },
 ];
 module.exports = routes;

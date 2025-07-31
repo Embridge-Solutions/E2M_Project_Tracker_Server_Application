@@ -14,5 +14,10 @@ router.get('/getTaskDetails', Controller.getTaskName);
 router.post('/insertTaskName', Controller.addTaskName);
 router.put('/startTaskTimer', Controller.startTimer);
 router.post('/singleTDetails', Controller.singleTaskDetails);
+router.post('/holdTimer', Controller.holdTask);
+router.get('/prevStatus/:ParentTaskId?', Controller.previousTaskStatus);
+router.put('/endTask', Controller.endCurrentTask);
+router.put('/restart', Controller.reStartCurrentTask);
+router.put('/delete/:ParentTaskId?', Controller.deleteTask);
 
 module.exports = router;

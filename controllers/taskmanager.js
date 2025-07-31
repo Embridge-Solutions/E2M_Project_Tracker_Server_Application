@@ -14,10 +14,12 @@ const getTaskName = async (req, res) => {
 };
 
 const addTaskName = async (req, res) => {
-  const { taskName, projectId } = req.body;
+  const { taskName, projectId, userId } = req.body;
   try {
     const insertTask = await db.sequelize.query(
-      `PRC_E2M_Insert_TaskName '${taskName}',${Number(projectId)}`
+      `PRC_E2M_Insert_TaskName '${taskName}',${Number(projectId)},${Number(
+        userId
+      )} `
     );
     return res
       .status(200)
@@ -29,10 +31,13 @@ const addTaskName = async (req, res) => {
 };
 
 const startTimer = async (req, res) => {
-  const { taskId, startTime } = req.body;
+  const { taskId, startTime, parentTaskId } = req.body;
+
   try {
     const taskTimer = await db.sequelize.query(
-      `PRC_E2M_Start_Task_Timer ${Number(taskId)},'${startTime}'`
+      `PRC_E2M_Start_Task_Timer ${Number(taskId)},'${startTime}',${Number(
+        parentTaskId
+      )}`
     );
     return res.status(200).json({ msg: 'Timer Start Successfully' });
   } catch (error) {
@@ -57,4 +62,85 @@ const singleTaskDetails = async (req, res) => {
   }
 };
 
-module.exports = { getTaskName, addTaskName, startTimer, singleTaskDetails };
+const holdTask = async (req, res) => {
+  const { Id, pauseEndTime, holdReason, userId } = req.body;
+  try {
+    const holdData = await db.sequelize.query(
+      `PRC_E2M_Holding_Task ${Number(
+        Id
+      )},'${pauseEndTime}','${holdReason}',${Number(userId)}`
+    );
+    res.status(200).json({ msg: 'Task Hold Successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  const { ParentTaskId } = req.params;
+
+  try {
+    const deleteData = await db.sequelize.query(
+      `PRC_E2M_Delete_Task ${Number(ParentTaskId)}`
+    );
+    res.status(200).json({ msg: 'Task Delete Successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const previousTaskStatus = async (req, res) => {
+  const { ParentTaskId } = req.params;
+  try {
+    const details = await db.sequelize.query(
+      `PRC_E2M_Get_Single_Task_Previouse_Details ${Number(ParentTaskId)}`
+    );
+    res
+      .status(200)
+      .json({ msg: 'Previous Data get Successfully!', data: details[0] });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const endCurrentTask = async (req, res) => {
+  const { Id, endTime, holdReason } = req.body;
+  try {
+    const details = await db.sequelize.query(
+      `PRC_E2M_End_CurrentTask ${Number(Id)},'${endTime}','${holdReason}'`
+    );
+    res.status(200).json({ msg: 'Task Completed Successfully!' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+const reStartCurrentTask = async (req, res) => {
+  const { Id, startTime } = req.body;
+
+  try {
+    const taskRestart = await db.sequelize.query(
+      `PRC_E2M_RESTART_CurrentTask ${Number(Id)},'${startTime}'`
+    );
+    res.status(200).json({ msg: 'Task Restart Successfully!' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+};
+
+module.exports = {
+  getTaskName,
+  addTaskName,
+  startTimer,
+  singleTaskDetails,
+  holdTask,
+  previousTaskStatus,
+  endCurrentTask,
+  reStartCurrentTask,
+  deleteTask,
+};
